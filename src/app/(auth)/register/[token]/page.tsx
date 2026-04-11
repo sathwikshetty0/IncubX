@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -114,27 +116,22 @@ export default function RegisterPage() {
 
   if (tokenLoading) {
     return (
-      <div className="w-full flex flex-col items-center justify-center py-12">
-        <svg className="h-8 w-8 animate-spin text-indigo-600 mb-4" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
-        <p className="text-sm text-gray-500 font-light">Validating your invitation…</p>
+      <div className="w-full flex flex-col items-center justify-center py-12 animate-fade-in">
+        <div className="h-10 w-10 rounded-full border-b-2 border-indigo-600 animate-spin" />
+        <p className="text-sm text-gray-500 font-light mt-4">Validating your invitation…</p>
       </div>
     )
   }
 
   if (tokenError) {
     return (
-      <div className="w-full text-center py-12">
-        <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
-          <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+      <div className="w-full text-center py-12 animate-fade-in">
+        <div className="h-20 w-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="h-10 w-10 text-red-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Invalid Invitation</h2>
         <p className="text-gray-500 mb-8 font-light max-w-sm mx-auto">{tokenError}</p>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild size="lg" className="rounded-full px-8">
           <Link href="/login">Back to Sign In</Link>
         </Button>
       </div>
@@ -142,35 +139,35 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full animate-fade-in">
       <div className="mb-8 text-center lg:text-left">
         <div className="flex items-center justify-center lg:justify-start gap-2 mb-4">
-          <Badge variant="indigo">Official Invitation</Badge>
-          <span className="text-xs text-gray-400 uppercase tracking-widest">Cohort 4</span>
+          <Badge variant="indigo" dot>Official Invitation</Badge>
+          <span className="text-xs text-gray-400 uppercase tracking-widest font-medium">Cohort 4</span>
         </div>
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Create your account</h1>
-        <p className="text-gray-500 mt-2 font-light">Join the INCUBX ecosystem as a <span className="text-indigo-600 font-medium">{roleLabel(tokenData?.role ?? '')}</span>.</p>
+        <p className="text-gray-500 mt-2 font-light leading-relaxed">Join the INCUBX ecosystem as a <span className="text-indigo-600 font-semibold">{roleLabel(tokenData?.role ?? '')}</span>.</p>
       </div>
 
       <div className="space-y-6">
-        <div className="rounded-xl bg-indigo-50/50 border border-indigo-100 p-5 space-y-3">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500 w-24 shrink-0">Email</span>
-            <span className="font-medium text-gray-900 truncate">{tokenData?.email}</span>
+        <div className="rounded-2xl bg-indigo-50/50 border border-indigo-100/50 p-6 space-y-4">
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-gray-500 w-24 shrink-0 font-medium">Email</span>
+            <span className="font-semibold text-gray-900 truncate">{tokenData?.email}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-gray-500 w-24 shrink-0">Role</span>
-            <span className="font-medium text-gray-900">{roleLabel(tokenData?.role ?? '')}</span>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-gray-500 w-24 shrink-0 font-medium">Role</span>
+            <span className="font-semibold text-gray-900">{roleLabel(tokenData?.role ?? '')}</span>
           </div>
           {tokenData?.org_name && (
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-gray-500 w-24 shrink-0">Organization</span>
-              <span className="font-medium text-gray-900">{tokenData.org_name}</span>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-gray-500 w-24 shrink-0 font-medium">Organization</span>
+              <span className="font-semibold text-gray-900">{tokenData.org_name}</span>
             </div>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           <Input
             label="Full name"
             type="text"
@@ -182,40 +179,30 @@ export default function RegisterPage() {
             disabled={loading}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700">
-              Password <span className="ml-1 text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 8 characters"
-                disabled={loading}
-                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent hover:border-gray-400 disabled:bg-gray-50 disabled:opacity-60"
-              />
+          <Input
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="new-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Min 8 characters"
+            disabled={loading}
+            rightIcon={
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                className="flex items-center p-1 text-gray-400 hover:text-gray-600 transition-colors"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
               >
                 {showPassword ? (
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                  </svg>
+                  <EyeOff className="h-4 w-4" />
                 ) : (
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  <Eye className="h-4 w-4" />
                 )}
               </button>
-            </div>
-          </div>
+            }
+          />
 
           <Input
             label="Confirm password"
@@ -230,28 +217,29 @@ export default function RegisterPage() {
           />
 
           {error && (
-            <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2.5 flex items-start gap-2">
-              <svg className="h-4 w-4 text-red-500 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              <p className="text-sm text-red-700">{error}</p>
+            <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 flex items-start gap-3 animate-slide-up">
+              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+              <p className="text-sm text-red-800 leading-tight">{error}</p>
             </div>
           )}
 
           <Button
             type="submit"
             size="lg"
-            className="w-full mt-2"
+            className="w-full mt-4 group shadow-lg shadow-indigo-100"
             isLoading={loading}
-            disabled={loading}
           >
-            {loading ? 'Setting up account…' : 'Accept invitation'}
+            {loading ? 'Setting up account…' : (
+              <>
+                Accept invitation <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </>
+            )}
           </Button>
         </form>
 
         <div className="mt-8 pt-6 border-t border-gray-100">
-           <p className="text-xs text-gray-400 text-center font-light">
-             By accepting this invitation, you agree to the INCUBX Founder Code of Conduct and Terms of Service.
+           <p className="text-xs text-gray-400 text-center font-light leading-loose">
+             By accepting this invitation, you agree to the INCUBX <Link href="#" className="underline hover:text-indigo-600 transition-colors">Founder Code of Conduct</Link> and <Link href="#" className="underline hover:text-indigo-600 transition-colors">Terms of Service</Link>.
            </p>
         </div>
       </div>

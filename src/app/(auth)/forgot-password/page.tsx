@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { CheckCircle2, AlertCircle, ArrowLeft, Mail } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -52,91 +52,89 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      {/* Logo */}
-      <div className="text-center mb-8">
-        <Link href="/login">
-          <span className="text-4xl font-extrabold tracking-tight text-indigo-700">INCUBX</span>
-        </Link>
-        <p className="text-gray-500 text-sm font-medium tracking-wide uppercase mt-1">
-          Where Startups Are Built
+    <div className="w-full animate-fade-in">
+      <div className="mb-10 text-center lg:text-left">
+        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Reset password</h1>
+        <p className="text-gray-500 mt-2 font-light">
+          {sent 
+            ? "Check your inbox for the reset link."
+            : "Enter your email and we'll send you a recovery link."}
         </p>
       </div>
 
-      <Card className="shadow-md">
-        <CardHeader className="pb-2 pt-6 px-6">
-          <h1 className="text-xl font-semibold text-gray-900">Reset your password</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Enter your email and we&apos;ll send you a reset link
-          </p>
-        </CardHeader>
-
-        <CardContent className="px-6 pb-6 pt-4">
-          {sent ? (
-            <div className="flex flex-col items-center gap-4 py-4 text-center">
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+      <div className="space-y-6">
+        {sent ? (
+          <div className="space-y-8 animate-slide-up">
+            <div className="rounded-2xl bg-indigo-50/50 border border-indigo-100/50 p-8 text-center sm:text-left flex flex-col sm:flex-row items-center gap-6">
+              <div className="h-14 w-14 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="h-8 w-8 text-green-600" />
               </div>
-              <div>
-                <h2 className="text-base font-semibold text-gray-900">Check your inbox</h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  We sent a password reset link to{' '}
-                  <span className="font-medium text-gray-800">{email}</span>.
-                  Check your spam folder if you don&apos;t see it.
+              <div className="space-y-1">
+                <h2 className="text-lg font-bold text-gray-900">Check your email</h2>
+                <p className="text-sm text-gray-600 leading-relaxed font-light">
+                  We sent a recovery link to <span className="font-semibold text-gray-900">{email}</span>.
+                  Check your spam folder if you don't see it within a few minutes.
                 </p>
               </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4">
               <Button
                 variant="outline"
-                size="sm"
+                className="w-full sm:w-auto rounded-full px-8"
                 onClick={() => { setSent(false); setEmail('') }}
               >
-                Send to a different email
+                Send to different email
+              </Button>
+              <Button asChild variant="ghost" className="w-full sm:w-auto text-gray-500 hover:text-indigo-600">
+                <Link href="/login" className="flex items-center gap-2">
+                  <ArrowLeft className="h-4 w-4" /> Back to Sign In
+                </Link>
               </Button>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
-              <Input
-                label="Email address"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                disabled={loading}
-              />
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <Input
+              label="Email address"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={loading}
+              leftIcon={<Mail className="h-4 w-4" />}
+            />
 
-              {error && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2.5 flex items-start gap-2">
-                  <svg className="h-4 w-4 text-red-500 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
+            {error && (
+              <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 flex items-start gap-3 animate-slide-up">
+                <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                <p className="text-sm text-red-800 leading-tight">{error}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full group shadow-lg shadow-indigo-100"
+              isLoading={loading}
+            >
+              {loading ? 'Sending link…' : (
+                <>
+                  Send recovery link <Mail className="ml-2 h-4 w-4 transition-transform group-hover:scale-110" />
+                </>
               )}
+            </Button>
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full"
-                isLoading={loading}
-                disabled={loading}
-              >
-                {loading ? 'Sending…' : 'Send reset link'}
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-
-      <p className="text-center text-sm text-gray-500 mt-6">
-        Remember your password?{' '}
-        <Link href="/login" className="text-indigo-600 hover:text-indigo-700 hover:underline font-medium">
-          Sign in
-        </Link>
-      </p>
+            <div className="text-center pt-2">
+              <Link href="/login" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-2 font-medium">
+                <ArrowLeft className="h-4 w-4" /> Back to Sign In
+              </Link>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   )
 }
