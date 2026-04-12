@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, ShieldAlert } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, ShieldAlert, Lock, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -114,6 +114,7 @@ export default function ResetPasswordPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Min 8 characters"
             disabled={loading || !sessionReady}
+            leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               <button
                 type="button"
@@ -139,6 +140,7 @@ export default function ResetPasswordPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter your password"
             disabled={loading || !sessionReady}
+            leftIcon={<ShieldCheck className="h-4 w-4" />}
             error={confirmPassword && confirmPassword !== password ? 'Passwords do not match' : undefined}
           />
 
