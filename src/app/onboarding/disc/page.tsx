@@ -237,125 +237,109 @@ function QuestionCard({
   const sectionIdx = SECTIONS.indexOf(currentSection) + 1
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full max-w-2xl animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-xs font-medium text-indigo-600 uppercase tracking-wide">
-            Section {sectionIdx} — {currentSection}
-          </p>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Question {questionIndex + 1} of {total}
-          </p>
+      <div className="mb-8 flex flex-col items-center">
+        <div className="w-full flex items-center justify-between mb-2">
+          <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.2em]">Section {sectionIdx} of 4</span>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Q. {questionIndex + 1} / {total}</span>
         </div>
-        <div className="text-right">
-          <span className="text-xs font-semibold text-gray-900">
-            {Math.round(progress)}%
-          </span>
+        <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
         </div>
+        <h2 className="mt-8 text-2xl font-bold text-gray-900 tracking-tight text-center">
+          Which description resonates?
+        </h2>
+        <p className="text-sm text-gray-500 font-light mt-1">Select one word that fits most, and one that fits least.</p>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden mb-6">
-        <div
-          className="h-full bg-indigo-600 rounded-full transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      <Card className="shadow-md">
-        <CardContent className="p-6 md:p-8">
-          <h2 className="text-base font-semibold text-gray-800 mb-6 text-center">
-            Which words describe you?
-          </h2>
-
-          {/* Column headers */}
-          <div className="grid grid-cols-[1fr_80px_80px] gap-2 mb-2 px-1">
-            <div className="text-xs text-gray-400 font-medium uppercase tracking-wide">Word</div>
-            <div className="text-xs text-center font-semibold text-indigo-700 uppercase tracking-wide">Most</div>
-            <div className="text-xs text-center font-semibold text-gray-500 uppercase tracking-wide">Least</div>
+      <Card className="shadow-premium border-none bg-white/50 backdrop-blur-md overflow-hidden">
+        <CardContent className="p-0">
+          <div className="grid grid-cols-[1fr_100px_100px] border-b border-gray-100 bg-gray-50/50 p-4">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-4">Attribute</span>
+            <span className="text-[10px] font-bold text-center text-indigo-600 uppercase tracking-widest">Most Likely</span>
+            <span className="text-[10px] font-bold text-center text-gray-500 uppercase tracking-widest">Least Likely</span>
           </div>
 
-          {/* Options */}
-          <div className="space-y-2">
+          <div className="p-4 space-y-3">
             {question.options.map((opt, idx) => (
               <div
                 key={idx}
                 className={cn(
-                  'grid grid-cols-[1fr_80px_80px] gap-2 items-center rounded-lg border px-4 py-3 transition-colors',
+                  'grid grid-cols-[1fr_100px_100px] items-center rounded-2xl border p-2 transition-all duration-300',
                   most === idx
-                    ? 'border-indigo-300 bg-indigo-50'
+                    ? 'border-indigo-200 bg-indigo-50/50 shadow-sm'
                     : least === idx
-                    ? 'border-gray-300 bg-gray-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-gray-200 bg-gray-50/80 grayscale opacity-60'
+                    : 'border-gray-100 bg-white hover:border-gray-200 hover:shadow-sm'
                 )}
               >
-                <span className="text-sm font-medium text-gray-900">{opt.text}</span>
+                <span className={cn(
+                  'text-sm font-semibold pl-4 transition-colors',
+                  most === idx ? 'text-indigo-900' : 'text-gray-700'
+                )}>{opt.text}</span>
 
-                {/* Most radio */}
                 <div className="flex justify-center">
                   <button
-                    type="button"
                     onClick={() => handleMost(idx)}
-                    disabled={least === idx}
                     className={cn(
-                      'h-5 w-5 rounded-full border-2 transition-colors flex items-center justify-center',
+                      'h-10 w-10 rounded-xl transition-all flex items-center justify-center',
                       most === idx
-                        ? 'border-indigo-600 bg-indigo-600'
-                        : 'border-gray-300 bg-white hover:border-indigo-400',
-                      least === idx && 'opacity-30 cursor-not-allowed'
+                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 scale-110'
+                        : 'bg-white border border-gray-200 text-gray-300 hover:border-indigo-300 hover:text-indigo-500'
                     )}
                   >
-                    {most === idx && (
-                      <span className="h-2 w-2 rounded-full bg-white block" />
-                    )}
+                    <CheckCircle2 className="h-5 w-5" />
                   </button>
                 </div>
 
-                {/* Least radio */}
                 <div className="flex justify-center">
                   <button
-                    type="button"
                     onClick={() => handleLeast(idx)}
-                    disabled={most === idx}
                     className={cn(
-                      'h-5 w-5 rounded-full border-2 transition-colors flex items-center justify-center',
+                      'h-10 w-10 rounded-xl transition-all flex items-center justify-center',
                       least === idx
-                        ? 'border-gray-600 bg-gray-600'
-                        : 'border-gray-300 bg-white hover:border-gray-500',
-                      most === idx && 'opacity-30 cursor-not-allowed'
+                        ? 'bg-gray-800 text-white shadow-lg shadow-gray-200 scale-110'
+                        : 'bg-white border border-gray-200 text-gray-300 hover:border-gray-400 hover:text-gray-500'
                     )}
                   >
-                    {least === idx && (
-                      <span className="h-2 w-2 rounded-full bg-white block" />
-                    )}
+                    <div className="h-1 w-4 bg-current rounded-full" />
                   </button>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex gap-3 mt-8">
+          <div className="p-6 bg-gray-50/30 flex gap-4 mt-2">
             <Button
               variant="outline"
-              size="md"
               onClick={onBack}
               disabled={questionIndex === 0}
-              className="flex-1"
+              className="flex-1 h-12 rounded-xl font-bold"
             >
-              Back
+              <ChevronLeft className="mr-2 h-4 w-4" /> Previous
             </Button>
             <Button
-              size="md"
               onClick={handleNext}
               disabled={!isValid}
-              className="flex-2 flex-1"
+              className="flex-[2] h-12 rounded-xl font-bold shadow-lg shadow-indigo-100 group"
             >
-              {questionIndex === total - 1 ? 'See Results' : 'Next'}
+              {questionIndex === total - 1 ? 'Finish & Reveal Results' : (
+                <>
+                  Next Question <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      <div className="mt-8 text-center">
+        <p className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em]">{currentSection}</p>
+      </div>
     </div>
   )
 }
