@@ -361,72 +361,101 @@ function ResultsScreen({
   const maxScore = Math.max(...Object.values(scores))
 
   return (
-    <div className="w-full max-w-2xl">
-      <div className="text-center mb-8">
-        <span className="text-4xl font-extrabold tracking-tight text-indigo-700">INCUBX</span>
+    <div className="w-full max-w-2xl animate-fade-in">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-6">
+          <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+          <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-[0.2em]">Analysis Complete</span>
+        </div>
+        <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-gray-900 mb-4">
+          Your Persona Profile
+        </h1>
+        <p className="text-gray-500 font-light max-w-md mx-auto leading-relaxed">
+          Based on your choices, we've identified your primary operational style within the ecosystem.
+        </p>
       </div>
 
-      <Card className="shadow-md">
-        <CardContent className="p-8">
+      <Card className="shadow-premium border-none bg-white/80 backdrop-blur-xl overflow-hidden mb-8">
+        <CardContent className="p-8 md:p-12">
           {/* Primary type hero */}
-          <div className={cn('rounded-xl border-2 p-6 mb-6 text-center', info.bg, info.border)}>
-            <p className="text-xs font-medium uppercase tracking-widest text-gray-500 mb-2">
-              Your Primary Style
+          <div className={cn('rounded-3xl border p-8 mb-10 text-center relative overflow-hidden', info.bg, info.border)}>
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+               <LayoutGrid className="h-24 w-24" />
+            </div>
+            
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mb-4">
+              Primary Style Archetype
             </p>
-            <div className={cn('text-7xl font-black mb-2', info.color)}>
+            <div className={cn('text-8xl font-black mb-2 tracking-tighter', info.color)}>
               {primaryType}
             </div>
-            <h2 className={cn('text-xl font-bold mb-3', info.color)}>{info.label}</h2>
-            <p className="text-sm text-gray-700 leading-relaxed max-w-md mx-auto">
+            <h2 className={cn('text-2xl font-black uppercase tracking-widest mb-4', info.color)}>{info.label}</h2>
+            <div className="w-12 h-1 bg-current mx-auto mb-6 opacity-20" />
+            <p className="text-sm text-gray-700 leading-relaxed max-w-md mx-auto font-light">
               {info.description}
             </p>
           </div>
 
           {/* Score bars */}
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Score Breakdown</h3>
-          <div className="space-y-3 mb-6">
+          <div className="space-y-6 mb-12">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Dimension Breakdown</h3>
+              <Info className="h-4 w-4 text-gray-300" />
+            </div>
             {(Object.entries(scores) as [DiscType, number][]).map(([type, score]) => {
-              const pct = maxScore > 0 ? Math.max(0, (score / (maxScore * 1.2)) * 100) : 0
+              const pct = maxScore > 0 ? Math.max(5, (score / (maxScore * 1.2)) * 100) : 5
               const tInfo = DISC_INFO[type]
               return (
-                <div key={type} className="flex items-center gap-3">
-                  <span className={cn('text-sm font-bold w-4 shrink-0', tInfo.color)}>{type}</span>
-                  <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                <div key={type} className="group">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={cn('text-xs font-bold uppercase tracking-widest', tInfo.color)}>{tInfo.label}</span>
+                    <span className="text-xs font-bold text-gray-900">{score}</span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className={cn('h-full rounded-full transition-all duration-700', TYPE_COLORS[type])}
+                      className={cn('h-full rounded-full transition-all duration-1000 ease-out', TYPE_COLORS[type])}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700 w-6 text-right">{score}</span>
                 </div>
               )
             })}
           </div>
 
           {/* Traits */}
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Key Traits</h3>
-          <div className="flex flex-wrap gap-2 mb-8">
-            {info.traits.map((trait) => (
-              <span
-                key={trait}
-                className={cn('rounded-full px-3 py-1 text-xs font-medium border', info.bg, info.border, info.color)}
-              >
-                {trait}
-              </span>
-            ))}
+          <div className="space-y-4 mb-10">
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Operational Strengths</h3>
+            <div className="flex flex-wrap gap-2">
+              {info.traits.map((trait) => (
+                <span
+                  key={trait}
+                  className={cn('rounded-xl px-4 py-2 text-xs font-bold border transition-colors hover:bg-white', info.bg, info.border, info.color)}
+                >
+                  {trait}
+                </span>
+              ))}
+            </div>
           </div>
 
           <Button
             size="lg"
-            className="w-full"
+            className="w-full h-14 text-lg font-bold shadow-xl shadow-indigo-200/50 group mt-4"
             onClick={onComplete}
             isLoading={saving}
             disabled={saving}
           >
-            {saving ? 'Saving results…' : 'Complete Profile'}
+            {saving ? 'Finalizing Profile…' : (
+              <>
+                Continue to Profile <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>
+
+      <p className="text-center text-[10px] text-gray-400 uppercase tracking-[0.2em] font-medium leading-relaxed">
+        Your DISC results will be used to match you with <br /> compatible mentors and cohort peers.
+      </p>
     </div>
   )
 }
