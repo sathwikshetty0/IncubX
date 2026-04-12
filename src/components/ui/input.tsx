@@ -37,15 +37,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             ref={ref}
             className={cn(
-              'block w-full rounded-md border bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400',
-              'transition-colors duration-150',
-              'focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent',
+              'block w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400',
+              'transition-all duration-200 ease-in-out',
+              'focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600',
               'disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-60',
               error
-                ? 'border-red-500 focus:ring-red-500'
-                : 'border-gray-300 hover:border-gray-400',
-              leftIcon && 'pl-9',
-              rightIcon && 'pr-9',
+                ? 'border-red-500 focus:ring-red-500/10 focus:border-red-600'
+                : 'border-gray-200 hover:border-gray-300',
+              leftIcon && 'pl-11',
+              rightIcon && 'pr-11',
               className
             )}
             aria-invalid={!!error}
