@@ -6,25 +6,25 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-indigo-500/10 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 select-none',
   {
     variants: {
       variant: {
         default:
-          'bg-indigo-700 text-white hover:bg-indigo-800 active:bg-indigo-900 focus-visible:ring-indigo-700 shadow-sm',
+          'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-200/50',
         secondary:
-          'bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300 focus-visible:ring-gray-400',
+          'bg-gray-100 text-gray-900 hover:bg-gray-200 active:bg-gray-300',
         outline:
-          'border border-gray-300 bg-white text-gray-800 hover:bg-gray-50 active:bg-gray-100 focus-visible:ring-gray-400',
+          'border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100',
         ghost:
-          'text-gray-700 hover:bg-gray-100 active:bg-gray-200 focus-visible:ring-gray-400',
+          'text-gray-700 hover:bg-gray-100 active:bg-gray-200',
         danger:
-          'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600 shadow-sm',
+          'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-md shadow-red-200/50',
       },
       size: {
-        sm: 'h-8 px-3 text-sm rounded-md',
-        md: 'h-10 px-4 text-sm rounded-md',
-        lg: 'h-12 px-6 text-base rounded-lg',
+        sm: 'h-9 px-4 text-sm rounded-lg',
+        md: 'h-11 px-5 text-sm rounded-xl',
+        lg: 'h-14 px-8 text-base rounded-2xl font-semibold',
       },
     },
     defaultVariants: {
