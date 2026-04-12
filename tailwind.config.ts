@@ -36,14 +36,18 @@ const config: Config = {
         },
       },
       borderRadius: {
-        card: '8px',
-        input: '6px',
-        pill: '20px',
+        card: '16px',
+        input: '12px',
+        pill: '9999px',
+        '2xl': '24px',
+        '3xl': '32px',
       },
       boxShadow: {
         card: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         'card-hover': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
         dropdown: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        premium: '0 10px 40px -6px rgba(0, 0, 0, 0.1), 0 10px 20px -6px rgba(0, 0, 0, 0.04)',
       },
       animation: {
         'fade-in': 'fade-in 0.2s ease-out',
