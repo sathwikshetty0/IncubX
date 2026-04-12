@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { ArrowRight, ChevronLeft, LayoutGrid, Info, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -129,61 +130,62 @@ const TYPE_COLORS: Record<DiscType, string> = {
 
 function WelcomeScreen({ onStart }: { onStart: () => void }) {
   return (
-    <div className="w-full max-w-2xl">
-      <div className="text-center mb-8">
-        <span className="text-4xl font-extrabold tracking-tight text-indigo-700">INCUBX</span>
-        <p className="text-gray-500 text-sm font-medium tracking-wide uppercase mt-1">
-          Personality Assessment
+    <div className="w-full max-w-2xl animate-fade-in">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-6">
+          <span className="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+          <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-[0.2em]">Phase 1: Self-Discovery</span>
+        </div>
+        <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-gray-900 mb-4">
+          DISC Assessment
+        </h1>
+        <p className="text-gray-500 font-light max-w-md mx-auto leading-relaxed">
+          Deepen your self-awareness and optimize how you build, lead, and collaborate within the INCUBX ecosystem.
         </p>
       </div>
 
-      <Card className="shadow-md">
-        <CardContent className="p-8">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-indigo-100 mb-4">
-              <svg className="h-7 w-7 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">DISC Personality Assessment</h1>
-            <p className="text-gray-500 mt-2 max-w-md mx-auto">
-              Understand your work style and how you interact with your team. Takes about 10 minutes.
-            </p>
-          </div>
-
-          {/* 4 types */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+      <Card className="shadow-premium overflow-hidden border-none bg-white/80 backdrop-blur-xl">
+        <CardContent className="p-8 md:p-12">
+          <div className="grid grid-cols-2 gap-4 mb-10">
             {(Object.entries(DISC_INFO) as [DiscType, typeof DISC_INFO.D][]).map(([type, info]) => (
-              <div key={type} className={cn('rounded-lg border p-3.5', info.bg, info.border)}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={cn('text-lg font-extrabold', info.color)}>{type}</span>
-                  <span className={cn('text-sm font-semibold', info.color)}>{info.label}</span>
+              <div key={type} className={cn('rounded-2xl border p-5 transition-all hover:scale-[1.02]', info.bg, info.border)}>
+                <div className="flex items-center justify-between mb-3">
+                  <span className={cn('text-2xl font-black', info.color)}>{type}</span>
+                  <div className={cn('h-1.5 w-1.5 rounded-full', info.color.replace('text', 'bg'))} />
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+                <h3 className={cn('text-sm font-bold uppercase tracking-wider mb-2', info.color)}>{info.label}</h3>
+                <p className="text-[11px] text-gray-600 leading-normal opacity-80">
                   {info.description.split('.')[0]}.
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 text-sm text-gray-600 space-y-1.5">
-            <div className="flex items-start gap-2">
-              <span className="text-indigo-500 mt-0.5">•</span>
-              <span>28 questions across 4 sections</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-indigo-500 mt-0.5">•</span>
-              <span>For each question, select the word <strong>MOST</strong> like you and the word <strong>LEAST</strong> like you</span>
-            </div>
-            <div className="flex items-start gap-2">
-              <span className="text-indigo-500 mt-0.5">•</span>
-              <span>There are no right or wrong answers — choose instinctively</span>
+          <div className="space-y-4 mb-10">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest text-center">Guidelines</h3>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                '28 questions across 4 distinct work dimensions',
+                'Identify word pairs that highlight your strengths and growth areas',
+                'Choose instinctively — your first reaction is often the most accurate',
+              ].map((text, i) => (
+                <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-gray-50/50 border border-gray-100">
+                  <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
+                    <span className="text-[10px] font-bold text-indigo-600">{i + 1}</span>
+                  </div>
+                  <span className="text-sm text-gray-600 font-light leading-relaxed">{text}</span>
+                </div>
+              ))}
             </div>
           </div>
 
-          <Button size="lg" className="w-full" onClick={onStart}>
-            Start Assessment
+          <Button size="lg" className="w-full h-14 text-lg font-bold shadow-xl shadow-indigo-200/50 group" onClick={onStart}>
+            Begin Assessment
+            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
           </Button>
+          <p className="text-center text-[10px] text-gray-400 mt-6 uppercase tracking-[0.2em] font-medium">
+            Estimated time: 8-10 minutes
+          </p>
         </CardContent>
       </Card>
     </div>
