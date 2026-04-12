@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, AlertCircle, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, ArrowRight, Mail, Lock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { getRoleRedirect } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
@@ -92,7 +92,7 @@ export default function LoginPage() {
       </div>
 
       <div className="space-y-6">
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           <Input
             label="Email address"
             type="email"
@@ -102,6 +102,7 @@ export default function LoginPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             disabled={loading}
+            leftIcon={<Mail className="h-4 w-4" />}
           />
 
           <div className="space-y-1.5">
@@ -124,6 +125,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               disabled={loading}
+              leftIcon={<Lock className="h-4 w-4" />}
               rightIcon={
                 <button
                   type="button"
