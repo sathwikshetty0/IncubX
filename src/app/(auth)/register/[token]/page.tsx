@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, CheckCircle2, ArrowRight, User, Lock, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -150,18 +150,18 @@ export default function RegisterPage() {
       </div>
 
       <div className="space-y-6">
-        <div className="rounded-2xl bg-indigo-50/50 border border-indigo-100/50 p-6 space-y-4">
+        <div className="rounded-2xl bg-indigo-50/40 border border-indigo-100/50 p-6 space-y-4 shadow-sm backdrop-blur-sm">
           <div className="flex items-center gap-4 text-sm">
-            <span className="text-gray-500 w-24 shrink-0 font-medium">Email</span>
+            <span className="text-gray-400 w-24 shrink-0 font-medium uppercase tracking-wider text-[10px]">Email</span>
             <span className="font-semibold text-gray-900 truncate">{tokenData?.email}</span>
           </div>
           <div className="flex items-center gap-4 text-sm">
-            <span className="text-gray-500 w-24 shrink-0 font-medium">Role</span>
-            <span className="font-semibold text-gray-900">{roleLabel(tokenData?.role ?? '')}</span>
+            <span className="text-gray-400 w-24 shrink-0 font-medium uppercase tracking-wider text-[10px]">Your Role</span>
+            <Badge variant="indigo" className="font-semibold">{roleLabel(tokenData?.role ?? '')}</Badge>
           </div>
           {tokenData?.org_name && (
             <div className="flex items-center gap-4 text-sm">
-              <span className="text-gray-500 w-24 shrink-0 font-medium">Organization</span>
+              <span className="text-gray-400 w-24 shrink-0 font-medium uppercase tracking-wider text-[10px]">Organization</span>
               <span className="font-semibold text-gray-900">{tokenData.org_name}</span>
             </div>
           )}
@@ -177,6 +177,7 @@ export default function RegisterPage() {
             onChange={(e) => setFullName(e.target.value)}
             placeholder="Jane Smith"
             disabled={loading}
+            leftIcon={<User className="h-4 w-4" />}
           />
 
           <Input
@@ -188,6 +189,7 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Min 8 characters"
             disabled={loading}
+            leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               <button
                 type="button"
@@ -213,6 +215,7 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Re-enter your password"
             disabled={loading}
+            leftIcon={<ShieldCheck className="h-4 w-4" />}
             error={confirmPassword && confirmPassword !== password ? 'Passwords do not match' : undefined}
           />
 
