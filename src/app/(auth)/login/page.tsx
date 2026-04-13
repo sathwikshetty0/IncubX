@@ -54,9 +54,9 @@ export default function LoginPage() {
       }
 
       const { data: profile, error: profileError } = await supabase
-        .from('users')
-        .select('role, disc_results, profile_completed')
-        .eq('id', user.id)
+        .from('profiles')
+        .select('disc_completed, profile_completed')
+        .eq('user_id', user.id)
         .single()
 
       if (profileError || !profile) {
@@ -66,7 +66,7 @@ export default function LoginPage() {
       }
 
       // Check onboarding state
-      if (!profile.disc_results) {
+      if (!profile.disc_completed) {
         router.push('/onboarding/disc')
         return
       }
@@ -76,7 +76,15 @@ export default function LoginPage() {
         return
       }
 
-      router.push(getRoleRedirect(profile.role))
+      // Fetch role
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .limit(1)
+
+      const userRole = roles && roles.length > 0 ? roles[0].role : 'applicant'
+      router.push(getRoleRedirect(userRole))
     } catch {
       setError('Something went wrong. Please try again.')
     } finally {
