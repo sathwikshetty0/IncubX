@@ -523,13 +523,34 @@ CREATE TRIGGER update_profiles_updated_at
 -- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  _role public.app_role;
+  _org_id UUID;
 BEGIN
-  INSERT INTO public.profiles (user_id, email, full_name)
+  -- Get role from metadata
+  _role := (NEW.raw_user_meta_data->>'role')::public.app_role;
+  
+  -- Get org_id from metadata or find by name
+  _org_id := (NEW.raw_user_meta_data->>'org_id')::UUID;
+  IF _org_id IS NULL AND NEW.raw_user_meta_data->>'org_name' IS NOT NULL THEN
+     SELECT id INTO _org_id FROM public.organizations WHERE name = NEW.raw_user_meta_data->>'org_name' LIMIT 1;
+  END IF;
+
+  -- Create profile
+  INSERT INTO public.profiles (user_id, email, full_name, org_id)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', '')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+    _org_id
   );
+
+  -- Assign role if provided
+  IF _role IS NOT NULL THEN
+    INSERT INTO public.user_roles (user_id, role)
+    VALUES (NEW.id, _role);
+  END IF;
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
