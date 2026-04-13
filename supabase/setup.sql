@@ -759,6 +759,30 @@ SELECT
 FROM public.profiles;
 
 -- ============================================================
--- 14. REALTIME
+-- 14. INVITATION TOKENS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS public.registration_tokens (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  token TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL,
+  role public.app_role NOT NULL DEFAULT 'team_member',
+  org_id UUID REFERENCES public.organizations(id),
+  org_name TEXT, -- Fallback name
+  created_by UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  expires_at TIMESTAMP WITH TIME ZONE,
+  used_at TIMESTAMP WITH TIME ZONE,
+  used_by UUID REFERENCES auth.users(id)
+);
+
+ALTER TABLE public.registration_tokens ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Admins can manage registration tokens" ON public.registration_tokens;
+CREATE POLICY "Admins can manage registration tokens" ON public.registration_tokens FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
+DROP POLICY IF EXISTS "Public can check token validity" ON public.registration_tokens;
+CREATE POLICY "Public can check token validity" ON public.registration_tokens FOR SELECT TO anon, authenticated USING (used_at IS NULL AND (expires_at IS NULL OR expires_at > now()));
+
+-- ============================================================
+-- 15. REALTIME
 -- ============================================================
 ALTER PUBLICATION supabase_realtime ADD TABLE public.announcements;
