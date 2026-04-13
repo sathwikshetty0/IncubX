@@ -54,20 +54,30 @@ export default function ProfilePage() {
 
       // Try to load existing profile
       const { data: profile } = await supabase
-        .from('users')
-        .select('full_name, phone, bio, linkedin_url, github_url, twitter_url, avatar_url, role')
-        .eq('id', user.id)
+        .from('profiles')
+        .select('full_name, phone, bio, linkedin, github, twitter, photo_url')
+        .eq('user_id', user.id)
         .single()
 
       if (profile) {
         setFullName(profile.full_name || metaName)
         setPhone(profile.phone || '')
         setBio(profile.bio || '')
-        setLinkedin(profile.linkedin_url || '')
-        setGithub(profile.github_url || '')
-        setTwitter(profile.twitter_url || '')
-        setAvatarUrl(profile.avatar_url || null)
-        setUserRole(profile.role || '')
+        setLinkedin(profile.linkedin || '')
+        setGithub(profile.github || '')
+        setTwitter(profile.twitter || '')
+        setAvatarUrl(profile.photo_url || null)
+      }
+
+      // Load role separately from user_roles
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .limit(1)
+
+      if (roles && roles.length > 0) {
+        setUserRole(roles[0].role)
       }
 
       setLoading(false)
@@ -104,8 +114,8 @@ export default function ProfilePage() {
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
       setAvatarUrl(publicUrl)
 
-      // Update users table
-      await supabase.from('users').update({ avatar_url: publicUrl }).eq('id', userId)
+      // Update profiles table
+      await supabase.from('profiles').update({ photo_url: publicUrl }).eq('user_id', userId)
     } catch (err) {
       console.error('Photo upload error:', err)
       setError('Failed to upload photo. Please try again.')
