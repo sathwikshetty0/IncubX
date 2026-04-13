@@ -535,23 +535,35 @@ export default function DiscPage() {
         completed_at: new Date().toISOString(),
       }
 
-      const { error } = await supabase
-        .from('users')
+      const { error: profileError } = await supabase
+        .from('profiles')
         .update({
-          disc_results: discPayload,
+          disc_type: primaryType,
+          disc_d: scores.D,
+          disc_i: scores.I,
+          disc_s: scores.S,
+          disc_c: scores.C,
+          disc_completed: true,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', user.id)
+        .eq('user_id', user.id)
 
-      if (error) {
-        // Table may not have disc_results column — try upsert to disc_results table
-        await supabase.from('disc_results').upsert({
+      if (profileError) console.error('Error updating profile with DISC:', profileError)
+
+      // Also save to detailed disc_results table
+      const { error: discResultsError } = await supabase
+        .from('disc_results')
+        .insert({
           user_id: user.id,
-          scores: discPayload,
+          d_score: scores.D,
+          i_score: scores.I,
+          s_score: scores.S,
+          c_score: scores.C,
           primary_type: primaryType,
           completed_at: new Date().toISOString(),
         })
-      }
+
+      if (discResultsError) console.error('Error inserting disc results:', discResultsError)
 
       router.push('/onboarding/profile')
     } catch {
