@@ -39,14 +39,14 @@ export async function POST(request: NextRequest) {
 
     if (phone !== undefined) updatePayload.phone = phone.trim() || null
     if (bio !== undefined) updatePayload.bio = bio.trim() || null
-    if (linkedin !== undefined) updatePayload.linkedin_url = linkedin.trim() || null
-    if (github !== undefined) updatePayload.github_url = github.trim() || null
-    if (twitter !== undefined) updatePayload.twitter_url = twitter.trim() || null
+    if (linkedin !== undefined) updatePayload.linkedin = linkedin.trim() || null
+    if (github !== undefined) updatePayload.github = github.trim() || null
+    if (twitter !== undefined) updatePayload.twitter = twitter.trim() || null
 
     const { error: updateError } = await supabase
-      .from('users')
+      .from('profiles')
       .update(updatePayload)
-      .eq('id', user.id)
+      .eq('user_id', user.id)
 
     if (updateError) {
       console.error('[complete-profile] update error:', updateError)
