@@ -85,6 +85,7 @@ export default function RegisterPage() {
         data: {
           full_name: fullName.trim(),
           role: tokenData?.role,
+          org_name: tokenData?.org_name,
           invitation_accepted: true,
         },
       })
@@ -97,6 +98,7 @@ export default function RegisterPage() {
             data: {
               full_name: fullName.trim(),
               role: tokenData?.role,
+              org_name: tokenData?.org_name,
             },
           },
         })
