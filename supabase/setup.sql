@@ -559,88 +559,143 @@ CREATE TRIGGER update_resource_requests_updated_at
 -- ============================================================
 
 -- Organizations: anyone authenticated can view, admins can modify
+DROP POLICY IF EXISTS "Anyone can view organizations" ON public.organizations;
 CREATE POLICY "Anyone can view organizations" ON public.organizations FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Admins can manage organizations" ON public.organizations;
 CREATE POLICY "Admins can manage organizations" ON public.organizations FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- User roles: users can see their own, admins can manage all in org
+DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles;
 CREATE POLICY "Users can view own roles" ON public.user_roles FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Admins can manage roles" ON public.user_roles;
 CREATE POLICY "Admins can manage roles" ON public.user_roles FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- Profiles: Own profile + same org members community access
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Same org users can view profiles" ON public.profiles;
 CREATE POLICY "Same org users can view profiles" ON public.profiles FOR SELECT TO authenticated USING (org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins and mentors can view org profiles" ON public.profiles;
 CREATE POLICY "Admins and mentors can view org profiles" ON public.profiles FOR SELECT TO authenticated USING ((org_id = public.get_user_org_id(auth.uid())) AND (public.is_admin_or_above(auth.uid()) OR public.is_mentor(auth.uid())));
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
 CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Admins can manage profiles" ON public.profiles;
 CREATE POLICY "Admins can manage profiles" ON public.profiles FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- DISC results: own only + admins
+DROP POLICY IF EXISTS "Users can view own disc" ON public.disc_results;
 CREATE POLICY "Users can view own disc" ON public.disc_results FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Users can insert own disc" ON public.disc_results;
 CREATE POLICY "Users can insert own disc" ON public.disc_results FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+DROP POLICY IF EXISTS "Admins can view disc" ON public.disc_results;
 CREATE POLICY "Admins can view disc" ON public.disc_results FOR SELECT TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- Programs: same org can view, admins can manage
+DROP POLICY IF EXISTS "Same org can view programs" ON public.programs;
 CREATE POLICY "Same org can view programs" ON public.programs FOR SELECT TO authenticated USING (org_id = public.get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage programs" ON public.programs;
 CREATE POLICY "Admins can manage programs" ON public.programs FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()) AND org_id = public.get_user_org_id(auth.uid()));
 
 -- Cohorts: same org can view, admins can manage
+DROP POLICY IF EXISTS "Same org can view cohorts" ON public.cohorts;
 CREATE POLICY "Same org can view cohorts" ON public.cohorts FOR SELECT TO authenticated USING (org_id = public.get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage cohorts" ON public.cohorts;
 CREATE POLICY "Admins can manage cohorts" ON public.cohorts FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()) AND org_id = public.get_user_org_id(auth.uid()));
 
 -- Teams: same org can view, admins can manage, team leads can update
+DROP POLICY IF EXISTS "Same org can view teams" ON public.teams;
 CREATE POLICY "Same org can view teams" ON public.teams FOR SELECT TO authenticated USING (org_id = public.get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage teams" ON public.teams;
 CREATE POLICY "Admins can manage teams" ON public.teams FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()) AND org_id = public.get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Team leads can update own team" ON public.teams;
 CREATE POLICY "Team leads can update own team" ON public.teams FOR UPDATE TO authenticated USING (EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = teams.id AND tm.user_id = auth.uid() AND tm.role_in_team = 'lead')) WITH CHECK (EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = teams.id AND tm.user_id = auth.uid() AND tm.role_in_team = 'lead'));
+DROP POLICY IF EXISTS "Investors can view visible teams" ON public.teams;
 CREATE POLICY "Investors can view visible teams" ON public.teams FOR SELECT TO authenticated USING (investor_visible = true AND has_role(auth.uid(), 'investor'::app_role));
 
 -- Team members: team members can view their team, admins can manage
+DROP POLICY IF EXISTS "Team members can view own team members" ON public.team_members;
 CREATE POLICY "Team members can view own team members" ON public.team_members FOR SELECT TO authenticated USING (user_id = auth.uid() OR EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = team_members.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage team members" ON public.team_members;
 CREATE POLICY "Admins can manage team members" ON public.team_members FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- Mentor assignments: mentors see own, teams see own, admins manage
+DROP POLICY IF EXISTS "Mentors can view own assignments" ON public.mentor_assignments;
 CREATE POLICY "Mentors can view own assignments" ON public.mentor_assignments FOR SELECT TO authenticated USING (mentor_id = auth.uid());
+DROP POLICY IF EXISTS "Team members can view mentor assignments" ON public.mentor_assignments;
 CREATE POLICY "Team members can view mentor assignments" ON public.mentor_assignments FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = mentor_assignments.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage mentor assignments" ON public.mentor_assignments;
 CREATE POLICY "Admins can manage mentor assignments" ON public.mentor_assignments FOR ALL TO authenticated USING (public.is_admin_or_above(auth.uid()));
 
 -- Mentor slots & bookings
+DROP POLICY IF EXISTS "Mentors can manage own slots" ON public.mentor_slots;
 CREATE POLICY "Mentors can manage own slots" ON public.mentor_slots FOR ALL TO authenticated USING (mentor_id = auth.uid());
+DROP POLICY IF EXISTS "Authenticated can view available slots" ON public.mentor_slots;
 CREATE POLICY "Authenticated can view available slots" ON public.mentor_slots FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "Mentors can manage their bookings" ON public.mentor_bookings;
 CREATE POLICY "Mentors can manage their bookings" ON public.mentor_bookings FOR ALL TO authenticated USING (mentor_id = auth.uid());
+DROP POLICY IF EXISTS "Team members can view own team bookings" ON public.mentor_bookings;
 CREATE POLICY "Team members can view own team bookings" ON public.mentor_bookings FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM team_members tm WHERE tm.team_id = mentor_bookings.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Team members can create bookings" ON public.mentor_bookings;
 CREATE POLICY "Team members can create bookings" ON public.mentor_bookings FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM team_members tm WHERE tm.team_id = mentor_bookings.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage all bookings" ON public.mentor_bookings;
 CREATE POLICY "Admins can manage all bookings" ON public.mentor_bookings FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()));
 
 -- Mentor session notes
+DROP POLICY IF EXISTS "Mentors can manage assigned team session notes" ON public.mentor_session_notes;
 CREATE POLICY "Mentors can manage assigned team session notes" ON public.mentor_session_notes FOR ALL USING (mentor_id = auth.uid() AND EXISTS (SELECT 1 FROM public.mentor_assignments ma WHERE ma.mentor_id = auth.uid() AND ma.team_id = mentor_session_notes.team_id));
+DROP POLICY IF EXISTS "Team members can view own session notes" ON public.mentor_session_notes;
 CREATE POLICY "Team members can view own session notes" ON public.mentor_session_notes FOR SELECT USING (EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = mentor_session_notes.team_id AND tm.user_id = auth.uid()));
 
 -- Assignments & Submissions
+DROP POLICY IF EXISTS "Same org can view assignments" ON public.assignments;
 CREATE POLICY "Same org can view assignments" ON public.assignments FOR SELECT TO authenticated USING (org_id = public.get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage assignments" ON public.assignments;
 CREATE POLICY "Admins can manage assignments" ON public.assignments FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()) AND org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage submissions" ON public.submissions;
 CREATE POLICY "Admins can manage submissions" ON public.submissions FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()));
+DROP POLICY IF EXISTS "Team members can insert submissions" ON public.submissions;
 CREATE POLICY "Team members can insert submissions" ON public.submissions FOR INSERT TO authenticated WITH CHECK (EXISTS (SELECT 1 FROM team_members tm WHERE tm.team_id = submissions.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Team members can view own submissions" ON public.submissions;
 CREATE POLICY "Team members can view own submissions" ON public.submissions FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM team_members tm WHERE tm.team_id = submissions.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Mentors can view assigned team submissions" ON public.submissions;
 CREATE POLICY "Mentors can view assigned team submissions" ON public.submissions FOR SELECT TO authenticated USING (is_mentor(auth.uid()) AND EXISTS (SELECT 1 FROM mentor_assignments ma WHERE ma.team_id = submissions.team_id AND ma.mentor_id = auth.uid()));
+DROP POLICY IF EXISTS "Mentors can grade submissions" ON public.submissions;
 CREATE POLICY "Mentors can grade submissions" ON public.submissions FOR UPDATE TO authenticated USING (is_mentor(auth.uid()) AND EXISTS (SELECT 1 FROM mentor_assignments ma WHERE ma.team_id = submissions.team_id AND ma.mentor_id = auth.uid()));
 
 -- Notifications & Activity Log
+DROP POLICY IF EXISTS "Users can view own notifications" ON public.notifications;
 CREATE POLICY "Users can view own notifications" ON public.notifications FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Authenticated can insert notifications" ON public.notifications;
 CREATE POLICY "Authenticated can insert notifications" ON public.notifications FOR INSERT TO authenticated WITH CHECK (public.is_admin_or_above(auth.uid()) OR public.is_mentor(auth.uid()) OR user_id = auth.uid());
+DROP POLICY IF EXISTS "Team members can view activity" ON public.team_activity_log;
 CREATE POLICY "Team members can view activity" ON public.team_activity_log FOR SELECT TO authenticated USING (EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = team_activity_log.team_id AND tm.user_id = auth.uid()));
+DROP POLICY IF EXISTS "Admins and team members can insert activity" ON public.team_activity_log;
 CREATE POLICY "Admins and team members can insert activity" ON public.team_activity_log FOR INSERT TO authenticated WITH CHECK (public.is_admin_or_above(auth.uid()) OR EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.team_id = team_activity_log.team_id AND tm.user_id = auth.uid()));
 
 -- LMS, Sprints, Gates
+DROP POLICY IF EXISTS "Same org can view sprints" ON public.sprints;
 CREATE POLICY "Same org can view sprints" ON public.sprints FOR SELECT TO authenticated USING (org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage sprints" ON public.sprints;
 CREATE POLICY "Admins can manage sprints" ON public.sprints FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()) AND org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Same org can view gates" ON public.gates;
 CREATE POLICY "Same org can view gates" ON public.gates FOR SELECT TO authenticated USING (org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage gates" ON public.gates;
 CREATE POLICY "Admins can manage gates" ON public.gates FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()) AND org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Same org can view lms_modules" ON public.lms_modules;
 CREATE POLICY "Same org can view lms_modules" ON public.lms_modules FOR SELECT TO authenticated USING (org_id = get_user_org_id(auth.uid()));
+DROP POLICY IF EXISTS "Admins can manage lms_modules" ON public.lms_modules;
 CREATE POLICY "Admins can manage lms_modules" ON public.lms_modules FOR ALL TO authenticated USING (is_admin_or_above(auth.uid()) AND org_id = get_user_org_id(auth.uid()));
 
 -- INVESTOR & MISC
+DROP POLICY IF EXISTS "Investors can manage own watchlist" ON public.investor_watchlist;
 CREATE POLICY "Investors can manage own watchlist" ON public.investor_watchlist FOR ALL TO authenticated USING (investor_id = auth.uid());
+DROP POLICY IF EXISTS "Investors can manage own messages" ON public.investor_messages;
 CREATE POLICY "Investors can manage own messages" ON public.investor_messages FOR ALL TO authenticated USING (investor_id = auth.uid());
+DROP POLICY IF EXISTS "Users can view own certificates" ON public.certificates;
 CREATE POLICY "Users can view own certificates" ON public.certificates FOR SELECT TO authenticated USING (user_id = auth.uid());
+DROP POLICY IF EXISTS "Mentors can view own honorariums" ON public.honorariums;
 CREATE POLICY "Mentors can view own honorariums" ON public.honorariums FOR SELECT TO authenticated USING (mentor_id = auth.uid());
 
 -- ============================================================
@@ -649,16 +704,24 @@ CREATE POLICY "Mentors can view own honorariums" ON public.honorariums FOR SELEC
 
 -- Avatars Bucket
 INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT (id) DO NOTHING;
+DROP POLICY IF EXISTS "Avatar images are publicly accessible" ON storage.objects;
 CREATE POLICY "Avatar images are publicly accessible" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
+DROP POLICY IF EXISTS "Users can upload their own avatar" ON storage.objects;
 CREATE POLICY "Users can upload their own avatar" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+DROP POLICY IF EXISTS "Users can update their own avatar" ON storage.objects;
 CREATE POLICY "Users can update their own avatar" ON storage.objects FOR UPDATE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+DROP POLICY IF EXISTS "Users can delete their own avatar" ON storage.objects;
 CREATE POLICY "Users can delete their own avatar" ON storage.objects FOR DELETE USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
 
 -- Submissions Bucket
 INSERT INTO storage.buckets (id, name, public) VALUES ('submissions', 'submissions', false) ON CONFLICT (id) DO NOTHING;
+DROP POLICY IF EXISTS "Team members can upload to own team folder" ON storage.objects;
 CREATE POLICY "Team members can upload to own team folder" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'submissions' AND EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.user_id = auth.uid() AND (storage.foldername(name))[1] = tm.team_id::text));
+DROP POLICY IF EXISTS "Team members can view own team submissions storage" ON storage.objects;
 CREATE POLICY "Team members can view own team submissions storage" ON storage.objects FOR SELECT USING (bucket_id = 'submissions' AND EXISTS (SELECT 1 FROM public.team_members tm WHERE tm.user_id = auth.uid() AND (storage.foldername(name))[1] = tm.team_id::text));
+DROP POLICY IF EXISTS "Mentors can view assigned team submissions storage" ON storage.objects;
 CREATE POLICY "Mentors can view assigned team submissions storage" ON storage.objects FOR SELECT USING (bucket_id = 'submissions' AND EXISTS (SELECT 1 FROM public.mentor_assignments ma WHERE ma.mentor_id = auth.uid() AND (storage.foldername(name))[1] = ma.team_id::text));
+DROP POLICY IF EXISTS "Admins can view all submissions storage" ON storage.objects;
 CREATE POLICY "Admins can view all submissions storage" ON storage.objects FOR SELECT USING (bucket_id = 'submissions' AND public.is_admin_or_above(auth.uid()));
 
 -- ============================================================
