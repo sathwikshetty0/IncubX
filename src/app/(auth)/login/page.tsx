@@ -174,7 +174,10 @@ export default function LoginPage() {
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
           <p className="text-sm text-gray-500">
-            Don't have an account? <span className="text-indigo-600 font-medium cursor-help decoration-dotted underline underline-offset-4" title="Contact your program manager for an invitation.">How to join</span>
+            Don&apos;t have an account?{' '}
+            <Link href="/register" className="text-indigo-600 font-medium hover:underline">
+              Create one
+            </Link>
           </p>
         </div>
       </div>
