@@ -516,6 +516,7 @@ $$ LANGUAGE plpgsql SET search_path = public;
 -- ============================================================
 
 -- Profile updated_at
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
@@ -561,16 +562,19 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Submission updated_at
+DROP TRIGGER IF EXISTS update_submissions_updated_at ON public.submissions;
 CREATE TRIGGER update_submissions_updated_at
   BEFORE UPDATE ON public.submissions
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Mentor bookings updated_at
+DROP TRIGGER IF EXISTS update_mentor_bookings_updated_at ON public.mentor_bookings;
 CREATE TRIGGER update_mentor_bookings_updated_at
   BEFORE UPDATE ON public.mentor_bookings
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Resource requests updated_at
+DROP TRIGGER IF EXISTS update_resource_requests_updated_at ON public.resource_requests;
 CREATE TRIGGER update_resource_requests_updated_at
   BEFORE UPDATE ON public.resource_requests
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
