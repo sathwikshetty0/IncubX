@@ -70,13 +70,40 @@ CREATE POLICY "Users can insert their own DISC results"
   WITH CHECK (auth.uid() = user_id);
 
 -- 4. Storage Bucket for Avatars
--- Note: This part might need to be done via Supabase Dashboard or API, 
--- but we can declare the policy if the bucket is created.
--- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true);
+-- Run this in the Supabase SQL Editor to ensure the bucket exists
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('avatars', 'avatars', true)
+ON CONFLICT (id) DO NOTHING;
 
--- Storage Policies
--- CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
--- CREATE POLICY "Upload own avatar" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+-- Storage Policies for 'avatars' bucket
+-- 1. Allow public read access to all avatars
+CREATE POLICY "Public Access" 
+  ON storage.objects FOR SELECT 
+  USING (bucket_id = 'avatars');
+
+-- 2. Allow authenticated users to upload their own avatar
+CREATE POLICY "Users can upload their own avatar" 
+  ON storage.objects FOR INSERT 
+  WITH CHECK (
+    bucket_id = 'avatars' AND 
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- 3. Allow users to update their own avatar
+CREATE POLICY "Users can update their own avatar" 
+  ON storage.objects FOR UPDATE 
+  USING (
+    bucket_id = 'avatars' AND 
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- 4. Allow users to delete their own avatar
+CREATE POLICY "Users can delete their own avatar" 
+  ON storage.objects FOR DELETE 
+  USING (
+    bucket_id = 'avatars' AND 
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
 
 -- Function to handle user creation on auth signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
