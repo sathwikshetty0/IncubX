@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
-import { getInitials } from '@/lib/utils'
+import { User, Phone, Linkedin, Github, Twitter, Camera, ArrowRight, AlertCircle } from 'lucide-react'
+import { getInitials, cn } from '@/lib/utils'
 
 const MAX_BIO_LENGTH = 200
 
@@ -189,176 +190,172 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 py-10">
+    <div className="min-h-screen bg-[#FBFBFA] flex items-center justify-center p-4 py-16 animate-fade-in">
       <div className="w-full max-w-xl">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <span className="text-4xl font-extrabold tracking-tight text-indigo-700">INCUBX</span>
-          <p className="text-gray-500 text-sm font-medium tracking-wide uppercase mt-1">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 mb-6">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+            <span className="text-[10px] font-bold text-indigo-700 uppercase tracking-[0.2em]">Phase 2: Digital Identity</span>
+          </div>
+          <h1 className="text-4xl lg:text-5xl font-bold tracking-tighter text-gray-900 mb-4">
             Complete Your Profile
+          </h1>
+          <p className="text-gray-500 font-light max-w-md mx-auto leading-relaxed">
+            Your digital identity is how mentors and peers will interact with you. Make it count.
           </p>
         </div>
 
-        <Card className="shadow-md">
-          <CardHeader className="pb-2 pt-6 px-6">
-            <h1 className="text-xl font-semibold text-gray-900">Set up your profile</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Tell the community about yourself. Fields marked * are required.
-            </p>
-          </CardHeader>
-
-          <CardContent className="px-6 pb-8 pt-4">
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
-              {/* Avatar upload */}
-              <div className="flex items-center gap-4">
-                <div className="relative h-16 w-16 shrink-0">
+        <Card className="shadow-premium border-none bg-white/80 backdrop-blur-xl overflow-hidden">
+          <CardHeader className="pb-4 pt-10 px-8 flex flex-col items-center">
+             <div className="relative h-24 w-24 mb-6">
+                <div className={cn(
+                  "h-24 w-24 rounded-3xl shrink-0 overflow-hidden ring-4 ring-indigo-50 border-2 border-white shadow-premium transition-all duration-300",
+                  uploadingPhoto ? "opacity-50 scale-95" : "opacity-100 scale-100"
+                )}>
                   {avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={avatarUrl}
                       alt="Profile photo"
-                      className="h-16 w-16 rounded-full object-cover border-2 border-gray-200"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-xl font-bold border-2 border-gray-200">
+                    <div className="h-full w-full bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white text-3xl font-black">
                       {fullName ? getInitials(fullName) : userEmail.charAt(0).toUpperCase()}
                     </div>
                   )}
                   {uploadingPhoto && (
-                    <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
-                      <svg className="h-5 w-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
+                    <div className="absolute inset-0 flex items-center justify-center bg-indigo-900/40">
+                      <div className="h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     </div>
                   )}
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-700 mb-1">Profile photo</p>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handlePhotoUpload}
-                    disabled={uploadingPhoto || saving}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingPhoto || saving}
-                    isLoading={uploadingPhoto}
-                  >
-                    {uploadingPhoto ? 'Uploading…' : avatarUrl ? 'Change photo' : 'Upload photo'}
-                  </Button>
-                  <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF up to 5 MB</p>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl bg-white shadow-lg border border-gray-100 flex items-center justify-center text-indigo-600 hover:text-indigo-700 hover:scale-110 active:scale-90 transition-all"
+                  disabled={uploadingPhoto || saving}
+                >
+                  <Camera className="h-5 w-5" />
+                </button>
+             </div>
+             <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+                disabled={uploadingPhoto || saving}
+              />
+              <h2 className="text-xl font-bold text-gray-900">Personalize your profile</h2>
+              <p className="text-sm text-gray-500 font-light mt-1 text-center">
+                Fields marked <span className="text-red-500">*</span> are essential for verification.
+              </p>
+          </CardHeader>
+
+          <CardContent className="px-6 pb-8 pt-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Input
+                  label="Full name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Jane Smith"
+                  disabled={saving}
+                  error={fieldErrors.fullName}
+                  leftIcon={<User className="h-4 w-4" />}
+                />
+
+                <Input
+                  label="Phone number"
+                  type="tel"
+                  autoComplete="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  disabled={saving}
+                  error={fieldErrors.phone}
+                  leftIcon={<Phone className="h-4 w-4" />}
+                />
               </div>
-
-              <Input
-                label="Full name"
-                type="text"
-                autoComplete="name"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Jane Smith"
-                disabled={saving}
-                error={fieldErrors.fullName}
-              />
-
-              <Input
-                label="Phone number"
-                type="tel"
-                autoComplete="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+91 98765 43210"
-                disabled={saving}
-                error={fieldErrors.phone}
-              />
 
               <div className="flex flex-col gap-1.5">
                 <Textarea
-                  label="Bio"
+                  label="Professional Bio"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   placeholder="Tell your team about yourself, your background, and what you're working on…"
                   disabled={saving}
                   maxLength={MAX_BIO_LENGTH + 10}
-                  rows={3}
+                  rows={4}
                   error={fieldErrors.bio}
                   helperText={`${bio.length} / ${MAX_BIO_LENGTH} characters`}
                 />
               </div>
 
-              <Input
-                label="LinkedIn URL"
-                type="url"
-                autoComplete="url"
-                value={linkedin}
-                onChange={(e) => setLinkedin(e.target.value)}
-                placeholder="https://linkedin.com/in/yourname"
-                disabled={saving}
-                error={fieldErrors.linkedin}
-                leftIcon={
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
-                }
-              />
+              <div className="space-y-4 pt-2">
+                <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-4">Professional Presence</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <Input
+                    label="LinkedIn URL"
+                    type="url"
+                    autoComplete="url"
+                    value={linkedin}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                    placeholder="https://linkedin.com/in/yourname"
+                    disabled={saving}
+                    error={fieldErrors.linkedin}
+                    leftIcon={<Linkedin className="h-4 w-4" />}
+                  />
 
-              <Input
-                label="GitHub URL"
-                type="url"
-                autoComplete="url"
-                value={github}
-                onChange={(e) => setGithub(e.target.value)}
-                placeholder="https://github.com/yourname"
-                disabled={saving}
-                error={fieldErrors.github}
-                leftIcon={
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                }
-              />
+                  <Input
+                    label="GitHub URL"
+                    type="url"
+                    autoComplete="url"
+                    value={github}
+                    onChange={(e) => setGithub(e.target.value)}
+                    placeholder="https://github.com/yourname"
+                    disabled={saving}
+                    error={fieldErrors.github}
+                    leftIcon={<Github className="h-4 w-4" />}
+                  />
 
-              <Input
-                label="Twitter / X URL"
-                type="url"
-                autoComplete="url"
-                value={twitter}
-                onChange={(e) => setTwitter(e.target.value)}
-                placeholder="https://twitter.com/yourhandle"
-                disabled={saving}
-                error={fieldErrors.twitter}
-                leftIcon={
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                }
-              />
+                  <Input
+                    label="Twitter / X URL"
+                    type="url"
+                    autoComplete="url"
+                    value={twitter}
+                    onChange={(e) => setTwitter(e.target.value)}
+                    placeholder="https://twitter.com/yourhandle"
+                    disabled={saving}
+                    error={fieldErrors.twitter}
+                    leftIcon={<Twitter className="h-4 w-4" />}
+                  />
+                </div>
+              </div>
 
               {error && (
-                <div className="rounded-md bg-red-50 border border-red-200 px-3 py-2.5 flex items-start gap-2">
-                  <svg className="h-4 w-4 text-red-500 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <p className="text-sm text-red-700">{error}</p>
+                <div className="rounded-2xl bg-red-50 border border-red-100 px-4 py-3 flex items-start gap-3 animate-slide-up">
+                  <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                  <p className="text-sm text-red-800 leading-tight">{error}</p>
                 </div>
               )}
 
               <Button
                 type="submit"
                 size="lg"
-                className="w-full"
+                className="w-full h-14 text-lg font-bold shadow-xl shadow-indigo-200/50 group mt-4"
                 isLoading={saving}
                 disabled={saving || uploadingPhoto}
               >
-                {saving ? 'Saving…' : 'Save Profile & Continue'}
+                {saving ? 'Saving Identity…' : (
+                  <>
+                    Complete & Enter Ecosystem <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
